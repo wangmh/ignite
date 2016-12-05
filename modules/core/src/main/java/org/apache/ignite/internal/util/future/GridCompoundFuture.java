@@ -190,7 +190,7 @@ public class GridCompoundFuture<T, R> extends GridFutureAdapter<R> implements Ig
      * @return {@code True} if there are pending futures.
      */
     @SuppressWarnings("ForLoopReplaceableByForEach")
-    public final boolean hasPending() {
+    protected final boolean hasPending() {
         synchronized (sync) {
             int size = futuresCountNoLock();
 
