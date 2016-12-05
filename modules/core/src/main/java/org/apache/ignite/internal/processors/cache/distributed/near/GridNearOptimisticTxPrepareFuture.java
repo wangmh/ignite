@@ -202,7 +202,9 @@ public class GridNearOptimisticTxPrepareFuture extends GridNearOptimisticTxPrepa
     @SuppressWarnings("ForLoopReplaceableByForEach")
     public Set<IgniteTxKey> requestedKeys() {
         synchronized (sync) {
-            for (int i = 0; i < futuresCount(); i++) {
+            int size = futuresCountNoLock();
+
+            for (int i = 0; i < size; i++) {
                 IgniteInternalFuture<GridNearTxPrepareResponse> fut = future(i);
 
                 if (isMini(fut) && !fut.isDone()) {
@@ -233,8 +235,10 @@ public class GridNearOptimisticTxPrepareFuture extends GridNearOptimisticTxPrepa
     private MiniFuture miniFuture(IgniteUuid miniId) {
         // We iterate directly over the futs collection here to avoid copy.
         synchronized (sync) {
+            int size = futuresCountNoLock();
+
             // Avoid iterator creation.
-            for (int i = 0; i < futuresCount(); i++) {
+            for (int i = 0; i < size; i++) {
                 IgniteInternalFuture<GridNearTxPrepareResponse> fut = future(i);
 
                 if (!isMini(fut))
@@ -687,7 +691,9 @@ public class GridNearOptimisticTxPrepareFuture extends GridNearOptimisticTxPrepa
                 keys = new HashSet<>(keyLockFut.lockKeys);
             else {
                 synchronized (sync) {
-                    for (int i = 0; i < futuresCount(); i++) {
+                    int size = futuresCountNoLock();
+
+                    for (int i = 0; i < size; i++) {
                         IgniteInternalFuture<GridNearTxPrepareResponse> fut = future(i);
 
                         if (isMini(fut) && !fut.isDone()) {
