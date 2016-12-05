@@ -192,8 +192,10 @@ public class GridCompoundFuture<T, R> extends GridFutureAdapter<R> implements Ig
     @SuppressWarnings("ForLoopReplaceableByForEach")
     public final boolean hasPending() {
         synchronized (sync) {
+            int size = futuresCountNoLock();
+
             // Avoid iterator creation and collection copy.
-            for (int i = 0; i < futuresCount(); i++) {
+            for (int i = 0; i < size; i++) {
                 IgniteInternalFuture<T> fut = future(i);
 
                 if (!fut.isDone())
@@ -297,7 +299,7 @@ public class GridCompoundFuture<T, R> extends GridFutureAdapter<R> implements Ig
     @SuppressWarnings("unchecked")
     protected final IgniteInternalFuture<T> future(int idx) {
         assert Thread.holdsLock(sync);
-        assert futs != null && idx >= 0 && idx < futuresCount();
+        assert futs != null && idx >= 0 && idx < futuresCountNoLock();
 
         if (futs instanceof IgniteInternalFuture) {
             assert idx == 0;
