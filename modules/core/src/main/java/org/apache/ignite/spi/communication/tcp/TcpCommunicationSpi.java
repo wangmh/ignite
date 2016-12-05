@@ -4110,7 +4110,7 @@ public class TcpCommunicationSpi extends IgniteSpiAdapter
 
         /** {@inheritDoc} */
         @Override public byte directType() {
-            return 125;
+            return -37;
         }
 
         /** {@inheritDoc} */
