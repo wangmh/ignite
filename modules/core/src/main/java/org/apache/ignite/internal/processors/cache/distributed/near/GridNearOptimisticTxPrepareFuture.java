@@ -238,7 +238,7 @@ public class GridNearOptimisticTxPrepareFuture extends GridNearOptimisticTxPrepa
             int size = futuresCountNoLock();
 
             // Avoid iterator creation.
-            for (int i = 0; i < size; i++) {
+            for (int i = size - 1; i >= 0; i--) {
                 IgniteInternalFuture<GridNearTxPrepareResponse> fut = future(i);
 
                 if (!isMini(fut))
