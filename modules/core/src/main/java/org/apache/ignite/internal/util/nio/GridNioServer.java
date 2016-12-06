@@ -250,6 +250,7 @@ public class GridNioServer<T> {
      * @param writerFactory Writer factory.
      * @param skipRecoveryPred Skip recovery predicate.
      * @param msgQueueLsnr Message queue size listener.
+     * @param balancing Balancing flag.
      * @param filters Filters for this server.
      * @throws IgniteCheckedException If failed.
      */
@@ -274,6 +275,7 @@ public class GridNioServer<T> {
         GridNioMessageWriterFactory writerFactory,
         IgnitePredicate<Message> skipRecoveryPred,
         IgniteBiInClosure<GridNioSession, Integer> msgQueueLsnr,
+        boolean balancing,
         GridNioFilter... filters
     ) throws IgniteCheckedException {
         if (port != -1)
@@ -357,7 +359,7 @@ public class GridNioServer<T> {
 
         IgniteRunnable balancer0 = null;
 
-        if (balancePeriod > 0) {
+        if (balancing && balancePeriod > 0) {
             boolean rndBalance = IgniteSystemProperties.getBoolean(IGNITE_IO_BALANCE_RANDOM_BALANCE, false);
 
             balancer0 = rndBalance ? new RandomBalancer() : new SizeBasedBalancer(balancePeriod);
@@ -3122,6 +3124,9 @@ public class GridNioServer<T> {
         /** */
         private long selectorSpins;
 
+        /** */
+        private boolean balancing;
+
         /**
          * Finishes building the instance.
          *
@@ -3150,6 +3155,7 @@ public class GridNioServer<T> {
                 writerFactory,
                 skipRecoveryPred,
                 msgQueueLsnr,
+                balancing,
                 filters != null ? Arrays.copyOf(filters, filters.length) : EMPTY_FILTERS
             );
 
@@ -3160,6 +3166,16 @@ public class GridNioServer<T> {
                 ret.writeTimeout(writeTimeout);
 
             return ret;
+        }
+
+        /**
+         * @param balancing Balancing flag.
+         * @return This for chaining.
+         */
+        public Builder<T> balancing(boolean balancing) {
+            this.balancing = balancing;
+
+            return this;
         }
 
         /**
