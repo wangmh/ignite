@@ -170,6 +170,16 @@ public class GridIoMessageFactory implements MessageFactory {
         Message msg = null;
 
         switch (type) {
+            case -43:
+                msg = new TcpCommunicationSpi.HandshakeMessage2();
+
+                break;
+
+            case -42:
+                msg = new IgniteIoTestMessage();
+
+                break;
+
             case -41:
                 msg = new HadoopShuffleFinishResponse();
 
@@ -810,17 +820,7 @@ public class GridIoMessageFactory implements MessageFactory {
 
                 break;
 
-            case -37:
-                msg = new TcpCommunicationSpi.HandshakeMessage2();
-
-                break;
-
-            case -38:
-                msg = new IgniteIoTestMessage();
-
-                break;
-
-            // [-3..119] [124..127] [-36]- this
+            // [-3..119] [124..127] [-36..-43]- this
             // [120..123] - DR
             // [-4..-22, -30..-35] - SQL
             default:
