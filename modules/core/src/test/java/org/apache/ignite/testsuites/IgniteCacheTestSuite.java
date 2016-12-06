@@ -41,6 +41,7 @@ import org.apache.ignite.cache.store.jdbc.GridCacheJdbcBlobStoreMultithreadedSel
 import org.apache.ignite.cache.store.jdbc.GridCacheJdbcBlobStoreSelfTest;
 import org.apache.ignite.internal.managers.communication.IgniteCommunicationBalanceMultipleConnectionsTest;
 import org.apache.ignite.internal.managers.communication.IgniteCommunicationBalanceTest;
+import org.apache.ignite.internal.managers.communication.IgniteIoTestMessagesTest;
 import org.apache.ignite.internal.managers.communication.IgniteVariousConnectionNumberTest;
 import org.apache.ignite.internal.processors.cache.CacheAffinityCallSelfTest;
 import org.apache.ignite.internal.processors.cache.CacheDeferredDeleteSanitySelfTest;
@@ -337,6 +338,7 @@ public class IgniteCacheTestSuite extends TestSuite {
         suite.addTestSuite(IgniteVariousConnectionNumberTest.class);
         suite.addTestSuite(IgniteCommunicationBalanceTest.class);
         suite.addTestSuite(IgniteCommunicationBalanceMultipleConnectionsTest.class);
+        suite.addTestSuite(IgniteIoTestMessagesTest.class);
 
         return suite;
     }
