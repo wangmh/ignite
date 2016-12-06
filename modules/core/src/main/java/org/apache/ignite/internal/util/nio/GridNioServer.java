@@ -250,7 +250,7 @@ public class GridNioServer<T> {
      * @param writerFactory Writer factory.
      * @param skipRecoveryPred Skip recovery predicate.
      * @param msgQueueLsnr Message queue size listener.
-     * @param balancing Balancing flag.
+     * @param balancing NIO sessions balancing flag.
      * @param filters Filters for this server.
      * @throws IgniteCheckedException If failed.
      */
@@ -3124,7 +3124,7 @@ public class GridNioServer<T> {
         /** */
         private long selectorSpins;
 
-        /** */
+        /** NIO sessions balancing flag. */
         private boolean balancing;
 
         /**
@@ -3169,7 +3169,7 @@ public class GridNioServer<T> {
         }
 
         /**
-         * @param balancing Balancing flag.
+         * @param balancing NIO sessions balancing flag.
          * @return This for chaining.
          */
         public Builder<T> balancing(boolean balancing) {
