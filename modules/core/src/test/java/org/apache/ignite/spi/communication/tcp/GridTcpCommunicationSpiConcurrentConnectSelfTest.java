@@ -88,7 +88,7 @@ public class GridTcpCommunicationSpiConcurrentConnectSelfTest<T extends Communic
     private int connectionsPerNode = 1;
 
     /** */
-    private boolean pairedConnections;
+    private boolean pairedConnections = true;
 
     /**
      *

@@ -533,10 +533,12 @@ public class TcpCommunicationSpi extends IgniteSpiAdapter
                         curClients = clients.get(sndId);
 
                         oldClient = curClients != null && connKey.connectionIndex() < curClients.length ?
-                            curClients[0] : null;
+                            curClients[connKey.connectionIndex()] : null;
 
                         if (oldClient != null) {
                             if (oldClient instanceof GridTcpNioCommunicationClient) {
+                                assert oldClient.connectionIndex() == connKey.connectionIndex() : oldClient;
+
                                 if (log.isDebugEnabled())
                                     log.debug("Received incoming connection when already connected " +
                                         "to this node, rejecting [locNode=" + locNode.id() +
@@ -723,7 +725,7 @@ public class TcpCommunicationSpi extends IgniteSpiAdapter
                 GridTcpNioCommunicationClient client = null;
 
                 if (createClient) {
-                    client = new GridTcpNioCommunicationClient(0, ses, log);
+                    client = new GridTcpNioCommunicationClient(connKey.connectionIndex(), ses, log);
 
                     addNodeClient(node, connKey.connectionIndex(), client);
                 }
@@ -1763,7 +1765,7 @@ public class TcpCommunicationSpi extends IgniteSpiAdapter
         if (connectionsPerNode > 1) {
             connPlc = new ConnectionPolicy() {
                 @Override public int connectionIndex() {
-                    return (int)(Thread.currentThread().getId() % connectionsPerNode);
+                    return (int)(U.safeAbs(Thread.currentThread().getId()) % connectionsPerNode);
                 }
             };
         }
@@ -2392,6 +2394,7 @@ public class TcpCommunicationSpi extends IgniteSpiAdapter
      */
     private void addNodeClient(ClusterNode node, int connIdx, GridCommunicationClient addClient) {
         assert connectionsPerNode > 0 : connectionsPerNode;
+        assert connIdx == addClient.connectionIndex() : addClient;
 
         if (connIdx >= connectionsPerNode) {
             assert !usePairedConnections(node);
@@ -2513,6 +2516,8 @@ public class TcpCommunicationSpi extends IgniteSpiAdapter
                     throw new IgniteSpiException("Destination node is not in topology: " + node.id());
                 }
             }
+
+            assert connIdx == client.connectionIndex() : client;
 
             if (client.reserve())
                 return client;
