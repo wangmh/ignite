@@ -804,10 +804,9 @@ public class GridIoManager extends GridManagerAdapter<CommunicationSpi<Serializa
             }
         }
 
-        if (ctx.config().isUseStripedPool() &&
+        if (ctx.config().getStripedPoolSize() > 0 &&
             plc == GridIoPolicy.SYSTEM_POOL &&
-            msg.partition() != Integer.MIN_VALUE &&
-            msg.message().directType() != 58 // TODO Query request should go to former pool.
+            msg.partition() != Integer.MIN_VALUE
             ) {
             ctx.getStripedExecutorService().execute(msg.partition(), c);
 
