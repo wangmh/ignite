@@ -748,12 +748,15 @@ public class IgniteConfiguration {
      * @param stripedPoolSize Positive value if striped pool should be initialized
      *      with passed in number of threads (stripes) and used for requests processing
      *      or non-positive value to process requests in system pool.
+     * @return {@code this} for chaining.
      *
      * @see #getPublicThreadPoolSize()
      * @see #getSystemThreadPoolSize()
      */
-    public void setStripedPoolSize(int stripedPoolSize) {
+    public IgniteConfiguration setStripedPoolSize(int stripedPoolSize) {
         this.stripedPoolSize = stripedPoolSize;
+
+        return this;
     }
 
     /**
