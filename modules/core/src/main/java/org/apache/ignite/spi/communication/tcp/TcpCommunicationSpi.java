@@ -1023,7 +1023,7 @@ public class TcpCommunicationSpi extends IgniteSpiAdapter
      * falling into {@code selector.select(long)} in NIO server. Long value. Default is {@code 0}.
      * Can be set to {@code Long.MAX_VALUE} so selector threads will never block.
      */
-    private long selectorSpins = IgniteSystemProperties.getLong("IGNITE_SELECTOR_SPINS", 0L); // TODO
+    private long selectorSpins = IgniteSystemProperties.getLong("IGNITE_SELECTOR_SPINS", 0L);
 
     /** Address resolver. */
     private AddressResolver addrRslvr;
@@ -1177,39 +1177,46 @@ public class TcpCommunicationSpi extends IgniteSpiAdapter
         return locPortRange;
     }
 
-    /**
-     * TODO
-     *
-     * @return
-     */
-    public boolean isUsePairedConnections() {
+    /** {@inheritDoc} */
+    @Override public boolean isUsePairedConnections() {
         return usePairedConnections;
     }
 
     /**
-     * TODO
+     * Set this to {@code true} if {@code TcpCommunicationSpi} should
+     * maintain connection for outgoing and incoming messages separately.
+     * In this case total number of connections between local and each remote node
+     * is {@link #connectionsPerNode()} * 2.
+     * <p>
+     * Set this to {@code false} if each connection of {@link #getConnectionsPerNode()}
+     * should be used for outgoing and incoming messages. In this case total number
+     * of connections between local and each remote node is {@link #getConnectionsPerNode()}.
+     * In this case load NIO selectors load
+     * balancing of {@link GridNioServer} will be disabled.
+     * <p>
+     * Default is {@code true}.
      *
-     * @param usePairedConnections
+     * @param usePairedConnections {@code true} to use paired connections and {@code false} otherwise.
+     * @see #getConnectionsPerNode()
      */
     public void setUsePairedConnections(boolean usePairedConnections) {
         this.usePairedConnections = usePairedConnections;
     }
 
     /**
-     * TODO
+     * Sets number of connections to each remote node. if {@link #isUsePairedConnections()}
+     * is {@code true} then number of connections is doubled and half is used for incoming and
+     * half for outgoing messages.
      *
      * @param maxConnectionsPerNode Number of connections per node.
+     * @see #isUsePairedConnections()
      */
     public void setConnectionsPerNode(int maxConnectionsPerNode) {
         this.connectionsPerNode = maxConnectionsPerNode;
     }
 
-    /**
-     * TODO
-     *
-     * @return Number of connections per node.
-     */
-    public int getConnectionsPerNode() {
+    /** {@inheritDoc} */
+    @Override public int getConnectionsPerNode() {
         return connectionsPerNode;
     }
 
