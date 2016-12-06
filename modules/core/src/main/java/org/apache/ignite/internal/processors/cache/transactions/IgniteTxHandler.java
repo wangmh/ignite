@@ -872,7 +872,7 @@ public class IgniteTxHandler {
 
             U.error(log, "Failed completing transaction [commit=" + req.commit() + ", tx=" + tx + ']', e);
 
-            IgniteInternalFuture<IgniteInternalTx> res = null;
+            IgniteInternalFuture<IgniteInternalTx> res;
 
             IgniteInternalFuture<IgniteInternalTx> rollbackFut = tx.rollbackAsync();
 
@@ -884,7 +884,7 @@ public class IgniteTxHandler {
             if (e instanceof Error)
                 throw (Error)e;
 
-            return res == null ? new GridFinishedFuture<IgniteInternalTx>(e) : res;
+            return res;
         }
     }
 

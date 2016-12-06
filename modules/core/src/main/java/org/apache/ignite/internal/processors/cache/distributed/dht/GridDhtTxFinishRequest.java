@@ -368,7 +368,7 @@ public class GridDhtTxFinishRequest extends GridDistributedTxFinishRequest {
 
     /** {@inheritDoc} */
     @Override public String toString() {
-        return S.toString(GridDhtTxFinishRequest.class, this, super.toString());
+        return "GridDhtTxFinishRequest [commit=" + commit() + ", inv=" + isSystemInvalidate() + ']';
     }
 
     /** {@inheritDoc} */

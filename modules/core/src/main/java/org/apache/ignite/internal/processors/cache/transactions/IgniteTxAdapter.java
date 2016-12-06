@@ -318,6 +318,8 @@ public abstract class IgniteTxAdapter extends GridMetadataAwareAdapter implement
 
         if (log == null)
             log = U.logger(cctx.kernalContext(), logRef, this);
+
+        log.info("Created " + getClass().getSimpleName());
     }
 
     /**
@@ -367,6 +369,8 @@ public abstract class IgniteTxAdapter extends GridMetadataAwareAdapter implement
 
         if (log == null)
             log = U.logger(cctx.kernalContext(), logRef, this);
+
+        log.info("Created " + getClass().getSimpleName());
     }
 
     /** {@inheritDoc} */
@@ -1130,6 +1134,8 @@ public abstract class IgniteTxAdapter extends GridMetadataAwareAdapter implement
 
                 if (log.isDebugEnabled())
                     log.debug("Changed transaction state [prev=" + prev + ", new=" + this.state + ", tx=" + this + ']');
+
+                log.info("Changed state " + getClass().getSimpleName() + " " + state);
 
                 notifyAll();
             }

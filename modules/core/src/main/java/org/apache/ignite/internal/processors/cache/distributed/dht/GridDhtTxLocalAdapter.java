@@ -236,10 +236,9 @@ public abstract class GridDhtTxLocalAdapter extends IgniteTxLocalAdapter {
         AffinityTopologyVersion topVer);
 
     /**
-     * @param commit Commit flag.
      * @param err Error, if any.
      */
-    protected abstract void sendFinishReply(boolean commit, @Nullable Throwable err);
+    protected abstract void sendFinishReply(@Nullable Throwable err);
 
     /** {@inheritDoc} */
     @Override public boolean needsCompletedVersions() {
@@ -726,7 +725,7 @@ public abstract class GridDhtTxLocalAdapter extends IgniteTxLocalAdapter {
                         /*read*/read,
                         accessTtl,
                         filter == null ? CU.empty0() : filter,
-                        /**computeInvoke*/false);
+                        /*computeInvoke*/false);
 
                     return ret;
                 }

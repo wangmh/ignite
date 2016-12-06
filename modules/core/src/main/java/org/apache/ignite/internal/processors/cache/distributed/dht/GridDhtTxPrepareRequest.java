@@ -356,7 +356,7 @@ public class GridDhtTxPrepareRequest extends GridDistributedTxPrepareRequest {
 
     /** {@inheritDoc} */
     @Override public String toString() {
-        return S.toString(GridDhtTxPrepareRequest.class, this, "super", super.toString());
+        return "GridDhtTxPrepareRequest [onePhase=" + onePhaseCommit() + ']';
     }
 
     /** {@inheritDoc} */

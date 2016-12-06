@@ -80,9 +80,6 @@ public final class GridDhtTxFinishFuture<K, V> extends GridCompoundIdentityFutur
     @GridToStringExclude
     private GridDhtTxLocalAdapter tx;
 
-    /** Commit flag. */
-    private boolean commit;
-
     /** Error. */
     @SuppressWarnings("UnusedDeclaration")
     @GridToStringExclude
@@ -94,20 +91,15 @@ public final class GridDhtTxFinishFuture<K, V> extends GridCompoundIdentityFutur
     /** Near mappings. */
     private Map<UUID, GridDistributedTxMapping> nearMap;
 
-    /** Trackable flag. */
-    private boolean trackable = true;
-
     /**
      * @param cctx Context.
      * @param tx Transaction.
-     * @param commit Commit flag.
      */
-    public GridDhtTxFinishFuture(GridCacheSharedContext<K, V> cctx, GridDhtTxLocalAdapter tx, boolean commit) {
+    public GridDhtTxFinishFuture(GridCacheSharedContext<K, V> cctx, GridDhtTxLocalAdapter tx) {
         super(F.<IgniteInternalTx>identityReducer(tx));
 
         this.cctx = cctx;
         this.tx = tx;
-        this.commit = commit;
 
         dhtMap = tx.dhtMap();
         nearMap = tx.nearMap();
@@ -151,46 +143,59 @@ public final class GridDhtTxFinishFuture<K, V> extends GridCompoundIdentityFutur
 
     /** {@inheritDoc} */
     @Override public boolean trackable() {
-        return trackable;
+        return true;
     }
 
     /** {@inheritDoc} */
     @Override public void markNotTrackable() {
-        trackable = false;
+        assert false;
     }
 
     /**
      * @param e Error.
      */
-    public void onError(Throwable e) {
+    public void rollbackOnError(Throwable e) {
+//        if (ERR_UPD.compareAndSet(this, null, e)) {
+//            log.info("Dht rollback on error: " + tx.isSystemInvalidate() + " " + System.identityHashCode(tx) + " " + e);
+//
+//            U.dumpStack("rollback on error");
+//
+//            boolean marked = tx.setRollbackOnly();
+//
+//            if (e instanceof IgniteTxRollbackCheckedException) {
+//                if (marked) {
+//                    try {
+//                        tx.rollback();
+//                    }
+//                    catch (IgniteCheckedException ex) {
+//                        U.error(log, "Failed to automatically rollback transaction: " + tx, ex);
+//                    }
+//                }
+//            }
+//            else if (tx.isSystemInvalidate()) { // Invalidate remote transactions on heuristic error.
+//                finish(true);
+//
+//                try {
+//                    get();
+//                }
+//                catch (IgniteTxHeuristicCheckedException ignore) {
+//                    // Future should complete with GridCacheTxHeuristicException.
+//                }
+//                catch (IgniteCheckedException err) {
+//                    U.error(log, "Failed to invalidate transaction: " + tx, err);
+//                }
+//            }
+//
+//            onComplete();
+//        }
+        assert e != null;
+
+        log.info("Dht rollback on error: " + tx.isSystemInvalidate() + " " + System.identityHashCode(tx) + " " + e);
+
         if (ERR_UPD.compareAndSet(this, null, e)) {
-            boolean marked = tx.setRollbackOnly();
+            tx.setRollbackOnly();
 
-            if (e instanceof IgniteTxRollbackCheckedException) {
-                if (marked) {
-                    try {
-                        tx.rollback();
-                    }
-                    catch (IgniteCheckedException ex) {
-                        U.error(log, "Failed to automatically rollback transaction: " + tx, ex);
-                    }
-                }
-            }
-            else if (tx.isSystemInvalidate()) { // Invalidate remote transactions on heuristic error.
-                finish();
-
-                try {
-                    get();
-                }
-                catch (IgniteTxHeuristicCheckedException ignore) {
-                    // Future should complete with GridCacheTxHeuristicException.
-                }
-                catch (IgniteCheckedException err) {
-                    U.error(log, "Failed to invalidate transaction: " + tx, err);
-                }
-            }
-
-            onComplete();
+            finish(false);
         }
     }
 
@@ -245,7 +250,7 @@ public final class GridDhtTxFinishFuture<K, V> extends GridCompoundIdentityFutur
 
             Throwable e = this.err;
 
-            if (e == null && commit)
+            if (e == null)
                 e = this.tx.commitError();
 
             Throwable finishErr = e != null ? e : err;
@@ -255,7 +260,7 @@ public final class GridDhtTxFinishFuture<K, V> extends GridCompoundIdentityFutur
                     finishErr = this.tx.commitError();
 
                 if (this.tx.syncMode() != PRIMARY_SYNC)
-                    this.tx.sendFinishReply(commit, finishErr);
+                    this.tx.sendFinishReply(finishErr);
 
                 // Don't forget to clean up.
                 cctx.mvcc().removeFuture(futId);
@@ -284,15 +289,19 @@ public final class GridDhtTxFinishFuture<K, V> extends GridCompoundIdentityFutur
 
     /**
      * Initializes future.
+     *
+     * @param commit Commit flag.
      */
     @SuppressWarnings({"SimplifiableIfStatement", "IfMayBeConditional"})
-    public void finish() {
+    public void finish(boolean commit) {
+        log.info("Dht finish: " + commit + " " + System.identityHashCode(tx));
+
         boolean sync;
 
         if (!F.isEmpty(dhtMap) || !F.isEmpty(nearMap))
-            sync = finish(dhtMap, nearMap);
+            sync = finish(commit, dhtMap, nearMap);
         else if (!commit && !F.isEmpty(tx.lockTransactionNodes()))
-            sync = rollbackLockTransactions(tx.lockTransactionNodes());
+            sync = rollbackLockTransactions(commit, tx.lockTransactionNodes());
         else
             // No backup or near nodes to send commit message to (just complete then).
             sync = false;
@@ -304,10 +313,11 @@ public final class GridDhtTxFinishFuture<K, V> extends GridCompoundIdentityFutur
     }
 
     /**
+     * @param commit Commit flag.
      * @param nodes Nodes.
      * @return {@code True} in case there is at least one synchronous {@code MiniFuture} to wait for.
      */
-    private boolean rollbackLockTransactions(Collection<ClusterNode> nodes) {
+    private boolean rollbackLockTransactions(boolean commit, Collection<ClusterNode> nodes) {
         assert !commit;
         assert !F.isEmpty(nodes);
 
@@ -390,11 +400,14 @@ public final class GridDhtTxFinishFuture<K, V> extends GridCompoundIdentityFutur
     }
 
     /**
+     * @param commit Commit flag.
      * @param dhtMap DHT map.
      * @param nearMap Near map.
      * @return {@code True} in case there is at least one synchronous {@code MiniFuture} to wait for.
      */
-    private boolean finish(Map<UUID, GridDistributedTxMapping> dhtMap, Map<UUID, GridDistributedTxMapping> nearMap) {
+    private boolean finish(boolean commit,
+        Map<UUID, GridDistributedTxMapping> dhtMap,
+        Map<UUID, GridDistributedTxMapping> nearMap) {
         if (tx.onePhaseCommit())
             return false;
 
