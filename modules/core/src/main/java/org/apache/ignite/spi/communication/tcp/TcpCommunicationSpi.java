@@ -1188,7 +1188,7 @@ public class TcpCommunicationSpi extends IgniteSpiAdapter
      * Set this to {@code true} if {@code TcpCommunicationSpi} should
      * maintain connection for outgoing and incoming messages separately.
      * In this case total number of connections between local and each remote node
-     * is {@link #connectionsPerNode()} * 2.
+     * is {@link #getConnectionsPerNode()} * 2.
      * <p>
      * Set this to {@code false} if each connection of {@link #getConnectionsPerNode()}
      * should be used for outgoing and incoming messages. In this case total number
