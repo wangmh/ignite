@@ -901,7 +901,8 @@ public class GridNearOptimisticTxPrepareFuture extends GridNearOptimisticTxPrepa
                         }
                         else
                             remap();
-                    } else {
+                    }
+                    else {
                         parent.onPrepareResponse(m, res);
 
                         // Proceed prepare before finishing mini future.
