@@ -97,7 +97,7 @@ public class GridNioServer<T> {
     public static final int DFLT_SES_WRITE_TIMEOUT = 5000;
 
     /** Default send queue limit. */
-    public static final int DFLT_SEND_QUEUE_LIMIT = 1024;
+    public static final int DFLT_SEND_QUEUE_LIMIT = 0;
 
     /** Time, which server will wait before retry operation. */
     private static final long ERR_WAIT_TIME = 2000;
