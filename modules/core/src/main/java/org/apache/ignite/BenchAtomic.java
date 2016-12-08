@@ -62,7 +62,7 @@ public class BenchAtomic {
         String locHost = System.getProperty("LOC_HOST");
         int msgQLim = Integer.getInteger(
             "MSG_Q_LIM",
-            1024);
+            0);
         final boolean ioTest = Boolean.getBoolean("IO_TEST");
         final boolean ioTestNio = Boolean.getBoolean("IO_TEST_NIO");
         final int connPairs = Integer.getInteger("CONN_PAIRS", 1);
