@@ -1300,8 +1300,6 @@ public class IgniteTxManager extends GridCacheSharedManagerAdapter {
         if (log.isDebugEnabled())
             log.debug("Rolling back from TM [locNodeId=" + cctx.localNodeId() + ", tx=" + tx + ']');
 
-        log.info("rollback " + tx.getClass().getSimpleName());
-
         // 1. Record transaction version to avoid duplicates.
         addRolledbackTx(tx);
 

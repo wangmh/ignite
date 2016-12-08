@@ -155,42 +155,7 @@ public final class GridDhtTxFinishFuture<K, V> extends GridCompoundIdentityFutur
      * @param e Error.
      */
     public void rollbackOnError(Throwable e) {
-//        if (ERR_UPD.compareAndSet(this, null, e)) {
-//            log.info("Dht rollback on error: " + tx.isSystemInvalidate() + " " + System.identityHashCode(tx) + " " + e);
-//
-//            U.dumpStack("rollback on error");
-//
-//            boolean marked = tx.setRollbackOnly();
-//
-//            if (e instanceof IgniteTxRollbackCheckedException) {
-//                if (marked) {
-//                    try {
-//                        tx.rollback();
-//                    }
-//                    catch (IgniteCheckedException ex) {
-//                        U.error(log, "Failed to automatically rollback transaction: " + tx, ex);
-//                    }
-//                }
-//            }
-//            else if (tx.isSystemInvalidate()) { // Invalidate remote transactions on heuristic error.
-//                finish(true);
-//
-//                try {
-//                    get();
-//                }
-//                catch (IgniteTxHeuristicCheckedException ignore) {
-//                    // Future should complete with GridCacheTxHeuristicException.
-//                }
-//                catch (IgniteCheckedException err) {
-//                    U.error(log, "Failed to invalidate transaction: " + tx, err);
-//                }
-//            }
-//
-//            onComplete();
-//        }
         assert e != null;
-
-        log.info("Dht rollback on error: " + tx.isSystemInvalidate() + " " + System.identityHashCode(tx) + " " + e);
 
         if (ERR_UPD.compareAndSet(this, null, e)) {
             tx.setRollbackOnly();
@@ -294,8 +259,6 @@ public final class GridDhtTxFinishFuture<K, V> extends GridCompoundIdentityFutur
      */
     @SuppressWarnings({"SimplifiableIfStatement", "IfMayBeConditional"})
     public void finish(boolean commit) {
-        log.info("Dht finish: " + commit + " " + System.identityHashCode(tx));
-
         boolean sync;
 
         if (!F.isEmpty(dhtMap) || !F.isEmpty(nearMap))

@@ -485,6 +485,6 @@ public class GridNearTxPrepareRequest extends GridDistributedTxPrepareRequest {
 
     /** {@inheritDoc} */
     @Override public String toString() {
-        return "GridNearTxPrepareRequest [onePhase=" + onePhaseCommit() + ']';
+        return S.toString(GridNearTxPrepareRequest.class, this, super.toString());
     }
 }

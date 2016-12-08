@@ -363,9 +363,6 @@ public class GridCacheIoManager extends GridCacheSharedManagerAdapter {
 
             unmarshall(nodeId, cacheMsg);
 
-            if (!cacheMsg.partitionExchangeMessage())
-                log.info("Message: " + cacheMsg);
-
             if (cacheMsg.classError() != null)
                 processFailedMessage(nodeId, cacheMsg, c);
             else

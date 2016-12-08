@@ -276,7 +276,7 @@ public abstract class IgniteTxExceptionAbstractSelfTest extends GridCacheAbstrac
      * @throws Exception If failed.
      */
     public void testPutMultipleKeysTx() throws Exception {
-        for (TransactionConcurrency concurrency : new TransactionConcurrency[]{TransactionConcurrency.PESSIMISTIC}) {
+        for (TransactionConcurrency concurrency : TransactionConcurrency.values()) {
             for (TransactionIsolation isolation : TransactionIsolation.values()) {
                 checkPutTx(true, concurrency, isolation,
                     keyForNode(grid(0).localNode(), PRIMARY),

@@ -4268,9 +4268,9 @@ public abstract class IgniteUtils {
 
         if (log != null) {
             if (e == null)
-                log.info(compact(longMsg.toString()));
+                log.error(compact(longMsg.toString()));
             else
-                log.info(compact(longMsg.toString()) + " " + e);
+                log.error(compact(longMsg.toString()), e);
         }
         else {
             X.printerr("[" + SHORT_DATE_FMT.format(new java.util.Date()) + "] (err) " +

@@ -338,6 +338,6 @@ public class GridNearTxFinishRequest extends GridDistributedTxFinishRequest {
 
     /** {@inheritDoc} */
     @Override public String toString() {
-        return "GridNearTxFinishRequest [commit=" + commit() + ", inv=" + isInvalidate() + ']';
+        return GridToStringBuilder.toString(GridNearTxFinishRequest.class, this, "super", super.toString());
     }
 }
