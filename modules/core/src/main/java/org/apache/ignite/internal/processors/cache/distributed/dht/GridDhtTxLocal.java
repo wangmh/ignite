@@ -514,6 +514,19 @@ public class GridDhtTxLocal extends GridDhtTxLocalAdapter implements GridCacheMa
 
         IgniteCheckedException err = null;
 
+        if (!commit && prepFut != null) {
+            try {
+                prepFut.get();
+            }
+            catch (IgniteCheckedException e) {
+                if (log.isDebugEnabled())
+                    log.debug("Failed to prepare transaction [tx=" + this + ", e=" + e + ']');
+            }
+            finally {
+                prepFut = null;
+            }
+        }
+
         try {
             if (prepFut != null)
                 prepFut.get(); // Check for errors.

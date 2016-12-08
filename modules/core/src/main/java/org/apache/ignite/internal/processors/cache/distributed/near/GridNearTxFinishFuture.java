@@ -299,26 +299,7 @@ public final class GridNearTxFinishFuture<K, V> extends GridCompoundIdentityFutu
             if (err != null) {
                 tx.commitError(err);
 
-                boolean marked = tx.setRollbackOnly();
-
-                if (err instanceof IgniteTxRollbackCheckedException) {
-                    if (marked) {
-                        try {
-                            tx.rollback();
-                        }
-                        catch (IgniteCheckedException ex) {
-                            U.error(log, "Failed to automatically rollback transaction: " + tx, ex);
-                        }
-                    }
-                }
-                else if (tx.implicit() && tx.isSystemInvalidate()) { // Finish implicit transaction on heuristic error.
-                    try {
-                        tx.close();
-                    }
-                    catch (IgniteCheckedException ex) {
-                        U.error(log, "Failed to invalidate transaction: " + tx, ex);
-                    }
-                }
+                tx.setRollbackOnly();
             }
 
             if (commit && tx.commitError() != null)

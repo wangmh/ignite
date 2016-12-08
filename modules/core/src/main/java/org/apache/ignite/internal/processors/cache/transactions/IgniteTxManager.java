@@ -1198,8 +1198,6 @@ public class IgniteTxManager extends GridCacheSharedManagerAdapter {
         assert tx.state() == COMMITTING : "Invalid transaction state for commit from tm [state=" + tx.state() +
             ", expected=COMMITTING, tx=" + tx + ']';
 
-        log.info("commit " + tx.getClass().getSimpleName());
-
         if (log.isDebugEnabled())
             log.debug("Committing from TM [locNodeId=" + cctx.localNodeId() + ", tx=" + tx + ']');
 
