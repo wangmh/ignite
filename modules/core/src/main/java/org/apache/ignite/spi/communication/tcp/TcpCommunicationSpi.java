@@ -2600,7 +2600,7 @@ public class TcpCommunicationSpi extends IgniteSpiAdapter
      * @return Client.
      * @throws IgniteCheckedException If failed.
      */
-    @Nullable protected GridCommunicationClient createShmemClient(ClusterNode node,
+    @Nullable private GridCommunicationClient createShmemClient(ClusterNode node,
         int connIdx,
         Integer port) throws IgniteCheckedException {
         int attempt = 1;
@@ -2715,9 +2715,7 @@ public class TcpCommunicationSpi extends IgniteSpiAdapter
                         ", clientNode=" + node +
                         ", slowClientQueueLimit=" + slowClientQueueLimit + ']';
 
-                    U.quietAndWarn(
-                        log,
-                        msg);
+                    U.quietAndWarn(log, msg);
 
                     getSpiContext().failNode(id.nodeId(), msg);
                 }
