@@ -132,7 +132,7 @@ public class BenchAtomic {
         final IgniteCache<Integer, byte[]> cache0 = ignite.getOrCreateCache(
             BenchAtomic.<Integer, byte[]>cacheConfig(writeSync));
 
-        final IgniteCache<Integer, byte[]> asyncCache = cache0.withAsync();
+//        final IgniteCache<Integer, byte[]> asyncCache = cache0.withAsync();
 
         final Semaphore sem = new Semaphore(2048);
 
@@ -176,17 +176,17 @@ public class BenchAtomic {
 
                             int key = ThreadLocalRandom.current().nextInt(KEYS);
 
-                            if (async) {
-                                sem.acquireUninterruptibly();
-
-                                asyncCache.put(key, val);
-
-                                IgniteFuture<Object> f = asyncCache.future();
-
-                                f.listen(lsnr);
-
-                                continue;
-                            }
+//                            if (async) {
+//                                sem.acquireUninterruptibly();
+//
+//                                asyncCache.put(key, val);
+//
+//                                IgniteFuture<Object> f = asyncCache.future();
+//
+//                                f.listen(lsnr);
+//
+//                                continue;
+//                            }
 
                             boolean startTx = cache0.getConfiguration(CacheConfiguration.class).getAtomicityMode() ==
                                 CacheAtomicityMode.TRANSACTIONAL;
