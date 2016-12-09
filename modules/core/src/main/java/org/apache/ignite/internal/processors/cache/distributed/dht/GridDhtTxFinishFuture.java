@@ -273,7 +273,7 @@ public final class GridDhtTxFinishFuture<K, V> extends GridCompoundIdentityFutur
         if (!F.isEmpty(dhtMap) || !F.isEmpty(nearMap))
             sync = finish(commit, dhtMap, nearMap);
         else if (!commit && !F.isEmpty(tx.lockTransactionNodes()))
-            sync = rollbackLockTransactions(commit, tx.lockTransactionNodes());
+            sync = rollbackLockTransactions(tx.lockTransactionNodes());
         else
             // No backup or near nodes to send commit message to (just complete then).
             sync = false;
@@ -285,12 +285,10 @@ public final class GridDhtTxFinishFuture<K, V> extends GridCompoundIdentityFutur
     }
 
     /**
-     * @param commit Commit flag.
      * @param nodes Nodes.
      * @return {@code True} in case there is at least one synchronous {@code MiniFuture} to wait for.
      */
-    private boolean rollbackLockTransactions(boolean commit, Collection<ClusterNode> nodes) {
-        assert !commit;
+    private boolean rollbackLockTransactions(Collection<ClusterNode> nodes) {
         assert !F.isEmpty(nodes);
 
         if (tx.onePhaseCommit())
@@ -319,7 +317,7 @@ public final class GridDhtTxFinishFuture<K, V> extends GridCompoundIdentityFutur
                 tx.commitVersion(),
                 tx.threadId(),
                 tx.isolation(),
-                commit,
+                false,
                 tx.isInvalidate(),
                 tx.system(),
                 tx.ioPolicy(),
